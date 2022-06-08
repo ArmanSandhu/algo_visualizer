@@ -1,25 +1,263 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import ControlPanel from './components/ControlPanel/ControlPanel';
+// import Canvas from './components/Canvas/Canvas';
+import ModalDialog from './components/ModalDialog/ModalDialog';
+import Box from '@mui/material/Box';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Heap Sort'];
+// Check method
+const equals = (a, b) => a.length === b.length && a.every((v,i) => v === b[i]);
 
-export default App;
+function compare(a, b) {
+  return ['compare', a, b];
+};
+
+function swap(a, b) {
+  return ['swap', a, b];
+};
+
+function* bubbleSort(array) {
+  let len = array.length;
+  for (let i = 1; i < len; i++) {
+    for (let j = 0; j < len - 1; j++) {
+      if ((yield compare(j, j + 1)) > 0) {
+        yield swap (j, j + 1);
+      }
+    }
+  }
+};
+
+export default function App () {
+
+  const [array, setArray] = useState([]);
+  const [sort_selection, setSort] = useState(sortMethods[0]);
+  const [modalFlag, showModal] =  useState(false);
+  const [arraySize, setSize] = useState(10);
+  const [playing, setPlay] = useState(false);
+  const [done, setDone] = useState(false);
+  const [delay, setDelay] = useState(30);
+  const [barColor, setBarColor] = useState({});
+
+  function visualizer() {
+    let generator;
+    switch(sort_selection) {
+      case "Bubble Sort":
+        generator = bubbleSort(array);
+        break;
+      default:
+        console.log("Inside Visualizer Default");
+        break;
+    }
+    
+    let latestArray = array;
+    let nextValue = 0;
+    while (true) {
+    const action = generator.next(nextValue);
+    if (action.done) {
+      console.log("Done!");
+
+      return;
+    } else if (action.value[0] === 'compare') {
+        const a = latestArray[action.value[1]];
+        const b = latestArray[action.value[2]];
+        if (a > b) {
+          nextValue = 1;
+        } else if (a < b) {
+          nextValue = -1;
+        } else {
+          nextValue = 0;
+        }
+      console.log(JSON.stringify(latestArray) + `: Compared ${action.value[1]}: ${a} to ${action.value[2]}: ${b} resulting in ${nextValue}`);
+      } else if (action.value[0] === 'swap') {
+        latestArray = [...latestArray];
+        const tmp = latestArray[action.value[1]];
+        latestArray[action.value[1]] = latestArray[action.value[2]];
+        latestArray[action.value[2]] = tmp;
+        console.log(JSON.stringify(latestArray) + `: Swapped index ${action.value[1]} and ${action.value[2]}`);
+      }
+    };
+  }
+
+  useEffect(() => {
+    createRandomArray();
+  }, []);
+
+  useEffect(() => {
+    let generator;
+    switch(sort_selection) {
+      case "Bubble Sort":
+        generator = bubbleSort(array);
+        break;
+      default:
+        console.log("Inside Visualizer Default");
+        break;
+    }
+    let latestArray = array;
+    let nextValue = 0;
+    setBarColor({});
+
+    console.log("Delay: " + delay);
+    if(!done && playing) {
+      let timerFunc = window.setInterval(() => {
+    const action = generator.next(nextValue);
+    if (action.done) {
+      console.log("Done!");
+      setDone(true);
+      return;
+    } else if (action.value[0] === 'compare') {
+        const a = latestArray[action.value[1]];
+        const b = latestArray[action.value[2]];
+        if (a > b) {
+          nextValue = 1;
+        } else if (a < b) {
+          nextValue = -1;
+        } else {
+          nextValue = 0;
+        }
+        setBarColor({
+          [action.value[1]] : 'green',
+          [action.value[2]] : 'green',
+        });
+      console.log(JSON.stringify(latestArray) + `: Compared ${action.value[1]}: ${a} to ${action.value[2]}: ${b} resulting in ${nextValue}`);
+      } else if (action.value[0] === 'swap') {
+        latestArray = [...latestArray];
+        const tmp = latestArray[action.value[1]];
+        latestArray[action.value[1]] = latestArray[action.value[2]];
+        latestArray[action.value[2]] = tmp;
+        setBarColor({
+          [action.value[1]] : 'blue',
+          [action.value[2]] : 'blue',
+        });
+        setArray(latestArray);
+        console.log(JSON.stringify(latestArray) + `: Swapped index ${action.value[1]} and ${action.value[2]}`);
+      }
+      }, delay);
+
+      return () => window.clearInterval(timerFunc);
+    }
+  }, [done, playing]);
+
+  const createRandomArray = () => {
+    setArray(Array.from(Array(arraySize)).map(x => Math.floor(Math.random() * (200 - 1) + 1)));
+  };
+
+  const openModal = () => {
+    showModal(true);
+  };
+
+  const closeModal = (selection) => {
+    showModal(false);
+    setSort(selection);
+  };
+
+  const handleButtonCallback = (buttonEvent) => {
+    console.log(buttonEvent);
+    if (buttonEvent === "Sort Array") {
+      if (playing && done) {
+        console.log("Randomize the Array!");
+      } else {
+        setPlay(true);
+      }
+      /**console.log(sort_selection);
+      console.log(array);
+      console.log(arraySize);*/
+      //let checkArray = array;
+      //let mySortedArray = [];
+      //visualizer();
+      // switch(sort_selection) {
+      //   case "Bubble Sort":
+      //      /* mySortedArray = bubbleSort();
+      //     if (equals(mySortedArray, checkArray)) {
+      //       console.log("Sorted Correctly")
+      //       console.log(mySortedArray);
+      //       console.log(checkArray);
+      //     } else {
+      //       console.log("Sorting Error - Bubble Sort");
+      //     } */
+      //     visualizer(sort_selection);
+      //     break;
+      //   case "Insertion Sort":
+      //     mySortedArray = insertionSort();
+      //     if (equals(mySortedArray, checkArray)) {
+      //       console.log("Sorted Correctly")
+      //       console.log(mySortedArray);
+      //       console.log(checkArray);
+      //     } else {
+      //       console.log("Sorting Error - Insertion Sort");
+      //     }
+      //     break;
+      //   default:
+      //     console.log("Not implemented Sort yet!");
+      // }
+    }
+    else if (buttonEvent === "Randomize") {
+      createRandomArray();
+      setPlay(false);
+      setDone(false);
+    }
+  }
+
+  const setRandomArraySize = (value) => {
+    setSize(value);
+  }
+
+  const setAnimDelay = (value) => {
+    console.log("Setting Delay: " + value);
+    setDelay(value);
+  }
+
+  // const bubbleSort = () => {
+  //   let tempArray = array;
+  //   for (let i = 1; i < tempArray.length; i++) {
+  //     for (let j = 0; j < tempArray.length - 1; j++) {
+  //       if (tempArray[j] > tempArray[j + 1]) {
+  //         let temp = tempArray[j];
+  //         tempArray[j] = tempArray[j + 1];
+  //         tempArray[j + 1] = temp;
+  //       }
+  //     }
+  //   }
+  //   return tempArray;
+  // }
+
+  const insertionSort = () => {
+    let tempArray =array;
+    for (let i = 1; i < arraySize; i++) {
+      let current = tempArray[i];
+      let j = i - 1;
+      while((j >= 0) && (current < tempArray[j])) {
+        tempArray[j + 1] = tempArray[j];
+        --j;
+      }
+      tempArray[j + 1] = current;
+    }
+    return tempArray;
+  }
+
+    return (
+    <div className='container'>
+      <Box sx={{display: 'grid', height: '100%', width: '100%'}}>
+        {<><ControlPanel handleButtonCallback = {handleButtonCallback} 
+                      sort_method = {sort_selection} 
+                      openModal = {openModal}
+                      array_size = {arraySize}
+                      sliderChange = {setRandomArraySize}
+                      animDelay = {delay}
+                      delayChange = {setAnimDelay}/>
+        <ModalDialog showState = {modalFlag}
+                sortOptions = {sortMethods}
+                selection = {sort_selection}
+                onClose = {closeModal}/></>}
+        {/*<Canvas array = {this.state.array}/>*/}
+        <Box>
+            <div className='canvas'>
+                {array.map((value, idx) => (
+                    <div className='bar' key={idx} style={{height : `${value}px`, backgroundColor: barColor[idx] ?? 'crimson'}}></div>
+                ))}
+            </div>  
+        </Box>
+      </Box>
+    </div>
+    );
+}
