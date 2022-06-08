@@ -28,12 +28,11 @@ export default function ControlPanel(props) {
     }
 
     const handleInputChange = (event) => {
-        console.log(event);
         props.sliderChange(event.target.value === '' ? '' : Number(event.target.value));
     }
 
-    const handleDelayChange = (event, newValue) => {
-        props.delayChange(newValue);
+    const handleDelayChange = (event) => {
+        props.delayChange(event.target.value === '' ? '' : Number(event.target.value));
     }
 
     const handleBlur = () => {

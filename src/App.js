@@ -19,14 +19,42 @@ function swap(a, b) {
 
 function* bubbleSort(array) {
   let len = array.length;
+  let swapped;
   for (let i = 1; i < len; i++) {
+    swapped = false;
     for (let j = 0; j < len - 1; j++) {
       if ((yield compare(j, j + 1)) > 0) {
         yield swap (j, j + 1);
+        swapped = true;
       }
     }
+
+    if (!swapped) { break; };
   }
 };
+
+function* insertionSort(array) {
+  let len = array.length;
+  for (let i = 1; i < len; i++) {
+    for (let j = i; j > 0 && (yield compare(j, j - 1)) < 0; j--) {
+			yield swap(j, j - 1);
+		}
+  }
+};
+
+// const insertionSort = () => {
+//   let tempArray =array;
+//   for (let i = 1; i < arraySize; i++) {
+//     let current = tempArray[i];
+//     let j = i - 1;
+//     while((j >= 0) && (current < tempArray[j])) {
+//       tempArray[j + 1] = tempArray[j];
+//       --j;
+//     }
+//     tempArray[j + 1] = current;
+//   }
+//   return tempArray;
+// }
 
 export default function App () {
 
@@ -44,6 +72,9 @@ export default function App () {
     switch(sort_selection) {
       case "Bubble Sort":
         generator = bubbleSort(array);
+        break;
+      case "Insertion Sort":
+        generator = insertionSort(array);
         break;
       default:
         console.log("Inside Visualizer Default");
@@ -89,6 +120,10 @@ export default function App () {
       case "Bubble Sort":
         generator = bubbleSort(array);
         break;
+      case "Insertion Sort":
+        console.log("Insertion");
+        generator = insertionSort(array);
+        break;
       default:
         console.log("Inside Visualizer Default");
         break;
@@ -97,10 +132,10 @@ export default function App () {
     let nextValue = 0;
     setBarColor({});
 
-    console.log("Delay: " + delay);
     if(!done && playing) {
       let timerFunc = window.setInterval(() => {
     const action = generator.next(nextValue);
+    console.log(action);
     if (action.done) {
       console.log("Done!");
       setDone(true);
@@ -205,34 +240,6 @@ export default function App () {
   const setAnimDelay = (value) => {
     console.log("Setting Delay: " + value);
     setDelay(value);
-  }
-
-  // const bubbleSort = () => {
-  //   let tempArray = array;
-  //   for (let i = 1; i < tempArray.length; i++) {
-  //     for (let j = 0; j < tempArray.length - 1; j++) {
-  //       if (tempArray[j] > tempArray[j + 1]) {
-  //         let temp = tempArray[j];
-  //         tempArray[j] = tempArray[j + 1];
-  //         tempArray[j + 1] = temp;
-  //       }
-  //     }
-  //   }
-  //   return tempArray;
-  // }
-
-  const insertionSort = () => {
-    let tempArray =array;
-    for (let i = 1; i < arraySize; i++) {
-      let current = tempArray[i];
-      let j = i - 1;
-      while((j >= 0) && (current < tempArray[j])) {
-        tempArray[j + 1] = tempArray[j];
-        --j;
-      }
-      tempArray[j + 1] = current;
-    }
-    return tempArray;
   }
 
     return (
