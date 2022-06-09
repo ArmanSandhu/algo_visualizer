@@ -102,20 +102,6 @@ function* merge(start, mid, end) {
   }
 };
 
-// const insertionSort = () => {
-//   let tempArray =array;
-//   for (let i = 1; i < arraySize; i++) {
-//     let current = tempArray[i];
-//     let j = i - 1;
-//     while((j >= 0) && (current < tempArray[j])) {
-//       tempArray[j + 1] = tempArray[j];
-//       --j;
-//     }
-//     tempArray[j + 1] = current;
-//   }
-//   return tempArray;
-// }
-
 export default function App () {
 
   const [array, setArray] = useState([]);
@@ -126,49 +112,6 @@ export default function App () {
   const [done, setDone] = useState(false);
   const [delay, setDelay] = useState(30);
   const [barColor, setBarColor] = useState({});
-
-  function visualizer() {
-    let generator;
-    switch(sort_selection) {
-      case "Bubble Sort":
-        generator = bubbleSort(array);
-        break;
-      case "Insertion Sort":
-        generator = insertionSort(array);
-        break;
-      default:
-        console.log("Inside Visualizer Default");
-        break;
-    }
-    
-    let latestArray = array;
-    let nextValue = 0;
-    while (true) {
-    const action = generator.next(nextValue);
-    if (action.done) {
-      console.log("Done!");
-
-      return;
-    } else if (action.value[0] === 'compare') {
-        const a = latestArray[action.value[1]];
-        const b = latestArray[action.value[2]];
-        if (a > b) {
-          nextValue = 1;
-        } else if (a < b) {
-          nextValue = -1;
-        } else {
-          nextValue = 0;
-        }
-      console.log(JSON.stringify(latestArray) + `: Compared ${action.value[1]}: ${a} to ${action.value[2]}: ${b} resulting in ${nextValue}`);
-      } else if (action.value[0] === 'swap') {
-        latestArray = [...latestArray];
-        const tmp = latestArray[action.value[1]];
-        latestArray[action.value[1]] = latestArray[action.value[2]];
-        latestArray[action.value[2]] = tmp;
-        console.log(JSON.stringify(latestArray) + `: Swapped index ${action.value[1]} and ${action.value[2]}`);
-      }
-    };
-  }
 
   useEffect(() => {
     createRandomArray();
@@ -266,37 +209,6 @@ export default function App () {
       } else {
         setPlay(true);
       }
-      /**console.log(sort_selection);
-      console.log(array);
-      console.log(arraySize);*/
-      //let checkArray = array;
-      //let mySortedArray = [];
-      //visualizer();
-      // switch(sort_selection) {
-      //   case "Bubble Sort":
-      //      /* mySortedArray = bubbleSort();
-      //     if (equals(mySortedArray, checkArray)) {
-      //       console.log("Sorted Correctly")
-      //       console.log(mySortedArray);
-      //       console.log(checkArray);
-      //     } else {
-      //       console.log("Sorting Error - Bubble Sort");
-      //     } */
-      //     visualizer(sort_selection);
-      //     break;
-      //   case "Insertion Sort":
-      //     mySortedArray = insertionSort();
-      //     if (equals(mySortedArray, checkArray)) {
-      //       console.log("Sorted Correctly")
-      //       console.log(mySortedArray);
-      //       console.log(checkArray);
-      //     } else {
-      //       console.log("Sorting Error - Insertion Sort");
-      //     }
-      //     break;
-      //   default:
-      //     console.log("Not implemented Sort yet!");
-      // }
     }
     else if (buttonEvent === "Randomize") {
       createRandomArray();
