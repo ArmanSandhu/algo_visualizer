@@ -5,7 +5,7 @@ import ModalDialog from './components/ModalDialog/ModalDialog';
 import Box from '@mui/material/Box';
 import './App.css';
 
-const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Heap Sort'];
+const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort'];
 // Check method
 const equals = (a, b) => a.length === b.length && a.every((v,i) => v === b[i]);
 
@@ -39,6 +39,66 @@ function* insertionSort(array) {
     for (let j = i; j > 0 && (yield compare(j, j - 1)) < 0; j--) {
 			yield swap(j, j - 1);
 		}
+  }
+};
+
+function* selectionSort(array) {
+  let len = array.length;
+  let min_index;
+  for (let i = 0; i < len - 1; i++) {
+    min_index = i;
+    for (let j = i + 1; j < len; j++) {
+      if ((yield compare(min_index, j)) > 0) {
+        min_index = j;
+      }
+    }
+    yield swap(min_index, i);
+  }
+};
+
+function* quickSort(start, end) {
+  if (end - start <= 1) {
+    return;
+  }
+  const pivot = end - 1;
+  let i = start;
+  for (let j = start; j < end; j++) {
+    if ((yield compare(j, pivot)) < 0) {
+      yield swap(i, j);
+      i++;
+    }
+  }
+  yield swap(pivot, i);
+  yield* quickSort(start, i);
+  yield* quickSort(i + 1, end);
+}
+
+function* mergeSort(start, end) {
+  if (end - start <= 1) {
+    return;
+  }
+  let mid = start + Math.floor((end - start) / 2);
+  yield* mergeSort(start, mid);
+  yield* mergeSort(mid, end);
+  yield* merge(start, mid, end)
+}
+
+function* merge(start, mid, end) {
+  let start2 = mid;
+  while (start < mid && start2 < end) {
+    if((yield compare(start, start2)) < 0) {
+      start++;
+    } else {
+      let index = start2;
+      while (index != start) {
+        yield swap(index, index - 1);
+        index--;
+      }
+      yield swap(start, index);
+      start++;
+      mid++;
+      start2++;
+    }
   }
 };
 
@@ -123,6 +183,18 @@ export default function App () {
       case "Insertion Sort":
         console.log("Insertion");
         generator = insertionSort(array);
+        break;
+      case "Selection Sort":
+        console.log("Selection");
+        generator = selectionSort(array);
+        break;
+      case "Merge Sort":
+        console.log("Merge");
+        generator = mergeSort(0, array.length);
+        break;
+      case "Quick Sort":
+        console.log("Quick");
+        generator = quickSort(0, array.length);
         break;
       default:
         console.log("Inside Visualizer Default");
