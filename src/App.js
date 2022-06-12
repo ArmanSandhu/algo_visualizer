@@ -5,9 +5,7 @@ import ModalDialog from './components/ModalDialog/ModalDialog';
 import Box from '@mui/material/Box';
 import './App.css';
 
-const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort'];
-// Check method
-const equals = (a, b) => a.length === b.length && a.every((v,i) => v === b[i]);
+const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Cocktail Sort'];
 
 function compare(a, b) {
   return ['compare', a, b];
@@ -32,6 +30,31 @@ function* bubbleSort(array) {
     if (!swapped) { break; };
   }
 };
+
+function* cockTailSort(start, end) {
+  let swapped = true;
+  while(swapped) {
+    swapped = false;
+    for (let i = 0; i < end; i++) {
+      if ((yield compare(i, i + 1)) > 0) {
+        yield swap(i, i + 1);
+        swapped = true;
+      }
+    }
+    if (swapped == false) {
+      break;
+    }
+    end--;
+    swapped = false;
+    for (let j = end - 1; j >= start; j--) {
+      if ((yield compare(j, j + 1)) > 0) {
+        yield swap(j, j + 1);
+        swapped = true;
+      }
+    }
+    start++;
+  }
+}
 
 function* insertionSort(array) {
   let len = array.length;
@@ -139,8 +162,12 @@ export default function App () {
         console.log("Quick");
         generator = quickSort(0, array.length);
         break;
+      case "Cocktail Sort":
+        console.log("Cocktail");
+        generator = cockTailSort(0, array.length);
+        break;
       default:
-        console.log("Inside Visualizer Default");
+        console.log("Invalid Sort Selected!");
         break;
     }
     let latestArray = array;
