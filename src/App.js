@@ -5,7 +5,7 @@ import ModalDialog from './components/ModalDialog/ModalDialog';
 import Box from '@mui/material/Box';
 import './App.css';
 
-const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Cocktail Sort'];
+const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Cocktail Sort', 'Shell Sort'];
 
 function compare(a, b) {
   return ['compare', a, b];
@@ -64,6 +64,17 @@ function* insertionSort(array) {
 		}
   }
 };
+
+function* shellSort(array) {
+  let len = array.length;
+  for (let interval = Math.floor(len/2); interval > 0; interval = Math.floor(interval/2)) {
+    for (let i = interval; i < len; i++) {
+      for (let j = i; j >= interval && (yield compare(j, j - interval)) < 0; j -= interval) {
+        yield swap(j, j - interval);
+      }
+    }
+  }
+}
 
 function* selectionSort(array) {
   let len = array.length;
@@ -165,6 +176,10 @@ export default function App () {
       case "Cocktail Sort":
         console.log("Cocktail");
         generator = cockTailSort(0, array.length);
+        break;
+      case "Shell Sort":
+        console.log("Shell");
+        generator = shellSort(array);
         break;
       default:
         console.log("Invalid Sort Selected!");
