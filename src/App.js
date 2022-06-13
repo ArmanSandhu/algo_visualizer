@@ -5,7 +5,7 @@ import ModalDialog from './components/ModalDialog/ModalDialog';
 import Box from '@mui/material/Box';
 import './App.css';
 
-const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Cocktail Sort', 'Shell Sort'];
+const sortMethods = ['Bubble Sort', 'Selection Sort', 'Insertion Sort', 'Merge Sort', 'Quick Sort', 'Cocktail Sort', 'Shell Sort', 'Comb Sort'];
 
 function compare(a, b) {
   return ['compare', a, b];
@@ -30,6 +30,33 @@ function* bubbleSort(array) {
     if (!swapped) { break; };
   }
 };
+
+function findGap(gap) {
+  console.log("Finding Gap");
+  gap = Math.floor(gap / 1.3);
+  if (gap <= 1) {
+    return 1;
+  }
+  return gap;
+}
+
+function* combSort(array) {
+  let len = array.length;
+  let gap = len;
+  let swapped;
+  while(true) {
+    swapped = false;
+    gap = findGap(gap);
+    for (let j = 0; j < len - gap; j++) {
+      if ((yield compare(j, j + gap)) > 0) {
+        yield swap (j, j + gap);
+        swapped = true;
+      }
+    }
+
+    if (!swapped && gap === 1) { break; };
+  }
+}
 
 function* cockTailSort(start, end) {
   let swapped = true;
@@ -180,6 +207,10 @@ export default function App () {
       case "Shell Sort":
         console.log("Shell");
         generator = shellSort(array);
+        break;
+      case "Comb Sort":
+        console.log("Comb");
+        generator = combSort(array);
         break;
       default:
         console.log("Invalid Sort Selected!");
