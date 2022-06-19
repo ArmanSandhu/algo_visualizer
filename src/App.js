@@ -173,10 +173,29 @@ export default function App () {
   const [done, setDone] = useState(false);
   const [delay, setDelay] = useState(30);
   const [barColor, setBarColor] = useState({});
+  const [dimensions, setDimensions] = useState({
+    height: window.innerHeight,
+    width: window.innerWidth
+  });
+  const [barWidth, setBarWidth] = useState(10);
+  const [barMargin, setBarMargin] = useState(1);
 
   useEffect(() => {
     createRandomArray();
   }, []);
+
+  useEffect(() => {
+    function handleResize() {
+      setDimensions({
+        height: window.innerHeight,
+        width: window.innerWidth
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
 
   useEffect(() => {
     let generator;
@@ -263,6 +282,26 @@ export default function App () {
 
   const createRandomArray = () => {
     setArray(Array.from(Array(arraySize)).map(x => Math.floor(Math.random() * (200 - 1) + 1)));
+    const width = Math.floor(dimensions.width / (arraySize * 2.5));
+    const margin = determineMargin();
+    setBarWidth(width);
+    setBarMargin(margin);
+  };
+
+  const determineMargin = () => {
+    if (arraySize < 10) {
+      return 15;
+    } else if (arraySize < 30) {
+      return 12;
+    } else if (arraySize < 50) {
+      return 9;
+    } else if (arraySize < 70) {
+      return 6;
+    } else if (arraySize < 90) {
+      return 3;
+    } else  {
+      return 1;
+    }
   };
 
   const openModal = () => {
@@ -317,7 +356,12 @@ export default function App () {
         <Box>
             <div className='canvas'>
                 {array.map((value, idx) => (
-                    <div className='bar' key={idx} style={{height : `${value}px`, backgroundColor: barColor[idx] ?? 'crimson'}}></div>
+                    <div className='bar' key={idx} style={{
+                      height: `${value}px`, 
+                      backgroundColor: barColor[idx] ?? 'crimson', 
+                      width: `${barWidth}px`,
+                      marginLeft: `${barMargin}px`,
+                      marginRight: `${barMargin}px`}}></div>
                 ))}
             </div>  
         </Box>

@@ -3,9 +3,9 @@
   min-height: 100%;
 }
 .bar{
-  width: 10px;
   display: inline-block;
-  margin: 0 1px;
+  margin-top: 0;
+  margin-bottom: 0;
   vertical-align: top;
 }
 

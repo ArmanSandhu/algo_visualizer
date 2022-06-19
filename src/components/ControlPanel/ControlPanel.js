@@ -63,7 +63,7 @@ export default function ControlPanel(props) {
                             <Grid item>
                                 <Box sx={{width: 250}}>
                                 <Slider value={typeof props.array_size === 'number' ? props.array_size: 0}
-                                    min={0}
+                                    min={10}
                                     max={100}
                                     step={10}
                                     onChange={handleSliderChange}
