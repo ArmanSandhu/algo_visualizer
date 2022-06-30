@@ -3,7 +3,6 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider';
-import MuiInput from '@mui/material/Input';
 import Button from '@mui/material/Button';
 
 export default function ControlPanel(props) {
